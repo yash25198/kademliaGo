@@ -32,6 +32,7 @@ func main() {
 			if op == 3 {
 				_, ip, port, found := rt.FindNode(addr)
 				if !found && ip != "NULL" {
+					// fmt.Println("herre",ip,port)
 					conn := helpers.CreateConnection(ip + ":" + port)
 					encodedmsg := helpers.CreateMessage(4, "/"+args[4]+"/"+args[3]+"/"+args[1]+":"+args[2]+"+"+addr)
 					stat := network.Send(conn, encodedmsg)

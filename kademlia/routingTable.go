@@ -2,9 +2,8 @@ package kademlia
 
 import (
 	"encoding/hex"
-	// "fmt"
+	//  "fmt"
 	"math/big"
-	// "strings"
 )
 
 type RoutingTableInterface interface {
@@ -58,7 +57,7 @@ func (x *RoutingTable) AddNode(newnode Node) {
 func (x *RoutingTable) FindNode(nodeID string) (string, string, string, bool) {
 	// fmt.Println(x.NodeID, nodeID)
 	i, found := findXORSigBit(x.NodeID, nodeID)
-	// fmt.Println("here:", nodeID, found, i, p, x.Buckets[p].GetNodeFromList(0))
+	//   // fmt.Println("here:", nodeID, found, i, p, x.Buckets[p].GetNodeFromList(0))
 	if found {
 		return x.NodeID, "192.168.0.85", "8282", true
 	}
@@ -81,10 +80,12 @@ func (x *RoutingTable) FindNode(nodeID string) (string, string, string, bool) {
 		p = i
 		for p >= 0 {
 			if x.Buckets[p].GetCountList() > 0 {
+				// fmt.Println(p)
 				break
 			} else {
 				p--
 			}
+			// fmt.Println(p)
 
 		}
 	}
@@ -93,8 +94,8 @@ func (x *RoutingTable) FindNode(nodeID string) (string, string, string, bool) {
 		return "NULL", "NULL", "NULL", false
 	}
 	// fmt.Println("here2:", nodeID)
-	size := x.Buckets[i].GetCountList()
-	// fmt.Println("here3size:", size)
+	size := x.Buckets[p].GetCountList()
+	// fmt.Println("here3size:", size,p)
 	for j := 0; j < size; j++ {
 		tempNode := x.Buckets[p].GetNodeFromList(j)
 		// fmt.Println(tempNode)
