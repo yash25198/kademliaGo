@@ -30,7 +30,7 @@ func main() {
 			}
 		} else {
 			if op == 3 {
-				_, ip, port, found := rt.FindNode(addr)
+				_, ip, port, found := rt.FindNode(addr, args[4])
 				if !found && ip != "NULL" {
 					// fmt.Println("herre",ip,port)
 					conn := helpers.CreateConnection(ip + ":" + port)
@@ -42,15 +42,15 @@ func main() {
 					m := types.Msgq{}
 					m = <-ch
 					conn2 := helpers.CreateConnection(m.IP)
-					encodedmsg2 := helpers.CreateMessage(3, msg)
+					encodedmsg2 := helpers.CreateMessage(3, "/"+args[4]+"/"+args[3]+"/"+args[1]+":"+args[2]+"+"+msg)
 					stat2 := network.Send(conn2, encodedmsg2)
 					if stat2 {
 						fmt.Println("msg sent")
 					}
 
-				} else {
+				} else if ip != "NULL" {
 					conn := helpers.CreateConnection(ip + ":" + port)
-					encodedmsg := helpers.CreateMessage(op, msg)
+					encodedmsg := helpers.CreateMessage(op, "/"+args[4]+"/"+args[3]+"/"+args[1]+":"+args[2]+"+"+msg)
 					stat := network.Send(conn, encodedmsg)
 					if stat {
 						fmt.Println("msg sent")

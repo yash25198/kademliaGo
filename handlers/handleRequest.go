@@ -69,7 +69,15 @@ func HandleRequest(conn net.Conn, rt *kademlia.RoutingTable, multiaddr string, m
 		{
 
 			data := string(buf2[1:])
-			fmt.Println("text data :", data)
+			split2 := strings.Split(data, "+")
+			split := strings.Split(split2[0], "/")
+			ipport := strings.Split(split[3], ":")
+			rt.AddNode(kademlia.Node{
+				NodeID: split[1],
+				IP:     ipport[0],
+				Port:   ipport[1],
+			})
+			fmt.Println("text data :", split2[1])
 
 		}
 	case 4:
@@ -90,7 +98,7 @@ func HandleRequest(conn net.Conn, rt *kademlia.RoutingTable, multiaddr string, m
 				break
 			}
 
-			nodeID, ipFound, port, found := rt.FindNode(payload)
+			nodeID, ipFound, port, found := rt.FindNode(payload, split[1])
 			if found {
 				msg := helpers.CreateMessage(6, multiaddr+"+/"+nodeID+"/tcp/"+ipFound+":"+port)
 				network.Send(exconn, msg)
@@ -98,11 +106,11 @@ func HandleRequest(conn net.Conn, rt *kademlia.RoutingTable, multiaddr string, m
 				msg := helpers.CreateMessage(5, multiaddr+"+/"+nodeID+"/tcp/"+ipFound+":"+port+"+"+payload)
 				network.Send(exconn, msg)
 			}
-			rt.AddNode(kademlia.Node{
-				IP:     ip,
-				Port:   port,
-				NodeID: split[1],
-			})
+			// rt.AddNode(kademlia.Node{
+			// 	IP:     ip,
+			// 	Port:   port,
+			// 	NodeID: split[1],
+			// })
 
 		}
 	case 5:

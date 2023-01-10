@@ -10,8 +10,8 @@ type Node struct {
 	NodeID string
 }
 type bucket struct {
-	List      []Node
-	WaitList  []Node
+	List      map[string]Node
+	WaitList  map[string]Node
 	Active    map[string]bool
 	CountList int
 	CountWait int
@@ -20,9 +20,9 @@ type bucket struct {
 
 type Bucket interface {
 	AppendToBucket(newNode Node)
-	RemoveFromHead()
+	RemoveFromHead(nodeID string)
 	GetActive(nodeid string) bool
-	GetNodeFromList(i int) Node
+	GetMap() map[string]Node
 	GetCountList() int
 	GetCountWait() int
 	GetMaxCount() int
@@ -31,8 +31,8 @@ type Bucket interface {
 func (x bucket) GetActive(nodeid string) bool {
 	return x.Active[nodeid]
 }
-func (x bucket) GetNodeFromList(i int) Node {
-	return x.List[i]
+func (x bucket) GetMap() map[string]Node {
+	return x.List
 }
 
 func (x bucket) GetCountList() int {
@@ -48,33 +48,29 @@ func (x bucket) GetMaxCount() int {
 
 func (x *bucket) AppendToBucket(newNode Node) {
 	if x.Active[newNode.NodeID] {
+		x.List[newNode.NodeID] = newNode
 		return
 	}
 	if x.CountList == x.MaxCount {
-		x.WaitList = append(x.WaitList, newNode)
+		x.WaitList[newNode.NodeID] = newNode
 		x.CountWait += 1
 		return
 	}
-	x.List = append(x.List, newNode)
+	x.List[newNode.NodeID] = newNode
 	x.CountList += 1
 	x.Active[newNode.NodeID] = true
 	// fmt.Println("list", x, x.List, x.CountList)
 }
 
-func (x *bucket) RemoveFromHead() {
-	x.List = x.List[1:]
+func (x *bucket) RemoveFromHead(nodeID string) {
+	delete(x.List, nodeID)
 	x.CountList -= 1
-	if x.CountWait > 0 {
-		x.AppendToBucket(x.WaitList[0])
-		x.WaitList = x.WaitList[1:]
-		x.CountWait -= 1
-	}
 }
 
 func CreateBucket() Bucket {
 	return &bucket{
-		List:     []Node{},
-		WaitList: []Node{},
+		List:     map[string]Node{},
+		WaitList: map[string]Node{},
 		Active:   map[string]bool{},
 		MaxCount: 20,
 	}
